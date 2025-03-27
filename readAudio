@@ -30,35 +30,39 @@
     window.pauseInterval = null;
     window.isLooping = true;
 
-   function initializeAudio() {
-    console.log("初始化音频...");
+    // 初始化音频
+    function initializeAudio() {
+        console.log("初始化音频...");
 
-    // 确保删除旧的 audio 实例
-    let oldAudio = document.getElementById("myAudio");
-    if (oldAudio) {
-        oldAudio.pause();
-        oldAudio.currentTime = 0;
-        oldAudio.remove();
+        // 确保删除旧的 audio 实例
+        let oldAudio = document.getElementById("myAudio");
+        if (oldAudio) {
+            oldAudio.pause();
+            oldAudio.currentTime = 0;
+            oldAudio.remove();
+        }
+
+        let audioContainer = document.getElementById("audio-container");
+
+        let newAudio = document.createElement("audio");
+        newAudio.id = "myAudio";
+        newAudio.controls = true;
+        newAudio.autoplay = false;
+        newAudio.loop = false;
+
+        let source = document.createElement("source");
+        source.src = "{{正面}}"; // 这里要替换成实际的音频地址
+        source.type = "audio/mpeg";
+
+        newAudio.appendChild(source);
+        audioContainer.appendChild(newAudio);
+
+        // 更新全局 audio 变量
+        window.audio = newAudio;
+        
+        // 立即为音频添加事件监听器
+        addListeners();
     }
-
-    let audioContainer = document.getElementById("audio-container");
-
-    let newAudio = document.createElement("audio");
-    newAudio.id = "myAudio";
-    newAudio.controls = true;
-    newAudio.autoplay = false;
-    newAudio.loop = false;
-
-    let source = document.createElement("source");
-    source.src = "{{正面}}"; // 这里要替换成实际的音频地址
-    source.type = "audio/mpeg";
-
-    newAudio.appendChild(source);
-    audioContainer.appendChild(newAudio);
-
-    // 更新全局 audio 变量
-    window.audio = newAudio;
-}
 
     function addListeners() {
         if (!audio) {
@@ -69,6 +73,9 @@
         document.getElementById("stopPause").addEventListener("click", stopAutoPause);
         document.getElementById("reversePlay").addEventListener("click", toggleReverse);
         document.getElementById("loopToggle").addEventListener("click", toggleLoop);
+
+        // 确保页面加载完成后启动自动暂停
+        pauseEveryCustom();
     }
 
     function pauseEveryCustom() {
@@ -114,10 +121,7 @@
         audio.loop = window.isLooping;
         document.getElementById("loopToggle").innerText = window.isLooping ? "循环播放（已开）" : "循环播放（已关）";
     }
-</script>
 
-<script>
+    // 页面加载时立即初始化音频
     initializeAudio();
-setTimeout(addListeners, 500);
-
 </script>
