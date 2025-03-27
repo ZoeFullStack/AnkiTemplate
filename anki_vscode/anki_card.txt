@@ -1,0 +1,161 @@
+问题:
+<style>.card {
+    font-family: "Consolas", "Courier New", monospace; /* VSCode 常见字体 */
+    font-size: 20px;
+    text-align: left; /* 代码风格更适合左对齐 */
+    color: #d4d4d4; /* VSCode 中的默认前景色 */
+    background-color: #1e1e1e; /* VSCode 黑色主题的背景色 */
+    padding: 10px; /* 增加内边距，视觉更清晰 */
+    border-radius: 5px; /* 增加圆角，类似 VSCode 质感 */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* 增加轻微阴影 */
+}
+</style><div id="front-card" class="card-content">
+    
+        <div id="audio-container"></div>
+
+        <label>播放时间（秒）：</label>
+        <input type="number" id="playTime" value="3">
+
+        <label>暂停时间（秒）：</label>
+        <input type="number" id="pauseTime" value="6">
+
+        <label>倒退时间（秒）：</label>
+        <input type="number" id="reverseTime" value="1">
+
+        <button id="startPause">开始自动暂停</button>
+        <button id="stopPause">停止</button>
+        <button id="reversePlay">倒放</button>
+        <button id="loopToggle">循环播放</button>
+    
+</div>
+
+<style>
+    input, button, label, audio {
+        display: block;
+        margin-top: 10px;
+    }
+</style>
+
+<script>
+    window.audio = null;
+    window.pauseInterval = null;
+    window.isLooping = true;
+
+    // 初始化音频
+    function initializeAudio() {
+        console.log("初始化音频...");
+
+        // 确保删除旧的 audio 实例
+        let oldAudio = document.getElementById("myAudio");
+        if (oldAudio) {
+            oldAudio.pause();
+            oldAudio.currentTime = 0;
+            oldAudio.remove();
+        }
+
+        let audioContainer = document.getElementById("audio-container");
+
+        let newAudio = document.createElement("audio");
+        newAudio.id = "myAudio";
+        newAudio.controls = true;
+        newAudio.autoplay = false;
+        newAudio.loop = false;
+
+        let source = document.createElement("source");
+        source.src = "hypertts-05029808b8a9970e8c8942d7a295005bb966115caca10911c0e84c77.mp3"; // 这里要替换成实际的音频地址
+        source.type = "audio/mpeg";
+
+        newAudio.appendChild(source);
+        audioContainer.appendChild(newAudio);
+
+        // 更新全局 audio 变量
+        window.audio = newAudio;
+        
+        // 立即为音频添加事件监听器
+        addListeners();
+    }
+
+    function addListeners() {
+        if (!audio) {
+            console.error("音频未初始化！");
+            return;
+        }
+        document.getElementById("startPause").addEventListener("click", pauseEveryCustom);
+        document.getElementById("stopPause").addEventListener("click", stopAutoPause);
+        document.getElementById("reversePlay").addEventListener("click", toggleReverse);
+        document.getElementById("loopToggle").addEventListener("click", toggleLoop);
+
+        // 确保页面加载完成后启动自动暂停
+        pauseEveryCustom();
+    }
+
+    function pauseEveryCustom() {
+        if (!audio) return;
+        let playDuration = parseFloat(document.getElementById("playTime").value) * 1000;
+        let pauseDuration = parseFloat(document.getElementById("pauseTime").value) * 1000;
+
+        if (window.pauseInterval) clearTimeout(window.pauseInterval);
+
+        audio.pause();
+        audio.currentTime = 0;
+
+        function playAndPauseLoop() {
+            audio.play();
+            window.pauseInterval = setTimeout(() => {
+                audio.pause();
+                setTimeout(playAndPauseLoop, pauseDuration);
+            }, playDuration);
+        }
+        playAndPauseLoop();
+    }
+
+    function stopAutoPause() {
+        if (window.pauseInterval) clearTimeout(window.pauseInterval);
+        if (audio) {
+            audio.pause();
+            audio.currentTime = 0;
+        }
+        window.isLooping = false;
+    }
+
+    function toggleReverse() {
+        if (!audio) return;
+        let reverseSeconds = parseFloat(document.getElementById("reverseTime").value);
+        audio.pause();
+        audio.currentTime = Math.max(audio.currentTime - reverseSeconds, 0);
+        audio.play();
+    }
+
+    function toggleLoop() {
+        if (!audio) return;
+        window.isLooping = !window.isLooping;
+        audio.loop = window.isLooping;
+        document.getElementById("loopToggle").innerText = window.isLooping ? "循环播放（已开）" : "循环播放（已关）";
+    }
+
+    // 页面加载时立即初始化音频
+    initializeAudio();
+</script>
+
+
+答案:
+<style>.card {
+    font-family: "Consolas", "Courier New", monospace; /* VSCode 常见字体 */
+    font-size: 20px;
+    text-align: left; /* 代码风格更适合左对齐 */
+    color: #d4d4d4; /* VSCode 中的默认前景色 */
+    background-color: #1e1e1e; /* VSCode 黑色主题的背景色 */
+    padding: 10px; /* 增加内边距，视觉更清晰 */
+    border-radius: 5px; /* 增加圆角，类似 VSCode 质感 */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* 增加轻微阴影 */
+}
+</style>
+
+<hr id=answer>
+
+1111111111111<br><span id="FSRS_status" style="font-size:12px;opacity:0.5;font-family:monospace;text-align:left;line-height:1em;margin-top:10em;display:inline-block;">
+        FSRS: enabled
+        <br>D: 99%
+        <br>S: 0.01 days
+        <br>R: 100.0%
+        </span>
