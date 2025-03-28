@@ -17,7 +17,7 @@ def get_current_card():
         response.raise_for_status()  # 检查 HTTP 请求是否成功
         result = response.json()
 
-        if "result" in result and result["Back"]:
+        if "result" in result and result["result"]:
             return result["result"]  # 返回完整的卡片信息
         else:
             return None
