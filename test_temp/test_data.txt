@@ -1,1 +1,58 @@
-{'sentence': {'value': 'これらのデータは多重化システムに基づいて管理されています', 'order': 0}, '正面': {'value': 'hypertts-05029808b8a9970e8c8942d7a295005bb966115caca10911c0e84c77.mp3', 'order': 1}, '背面': {'value': '1111111111111', 'order': 2}, 'vocab': {'value': '', 'order': 3}}
+FROM php:8.1-fpm
+WORKDIR /var/www
+ADD . /var/www
+
+# permission
+RUN chown -R www-data:www-data /var/www
+
+
+RUN pecl install xdebug 
+RUN docker-php-ext-enable xdebug
+
+# COPY php.ini /usr/local/etc/php/
+
+
+# COPY laravel-cron /etc/cron.d/laravel-cron
+
+
+# RUN echo "zend_extension=xdebug.so" >> /usr/local/etc/php/conf.d/20-xdebug.ini
+# RUN echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/20-xdebug.ini
+# RUN echo "xdebug.client_host=host.docker.internal" >> /usr/local/etc/php/conf.d/20-xdebug.ini
+# RUN echo "xdebug.client_port=9003" >> /usr/local/etc/php/conf.d/20-xdebug.ini
+# RUN echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/20-xdebug.ini
+
+# install composer
+RUN cd /usr/bin && curl -s http://getcomposer.org/installer | php && ln -s /usr/bin/composer.phar /usr/bin/composer
+
+# install packages
+RUN apt-get update \
+  && apt-get install -y \
+  gcc \
+  make \
+  git \
+  unzip \
+  vim \
+  libpng-dev \
+  libjpeg-dev \
+  libfreetype6-dev \
+  libmcrypt-dev \
+  libpq-dev \
+  curl \
+  gnupg \
+  openssl \
+  libgmp-dev \
+  && docker-php-ext-install pdo_pgsql pgsql mysqli pdo pdo_mysql gmp \
+  && docker-php-ext-configure gd --with-freetype --with-jpeg \
+  && docker-php-ext-install -j$(nproc) gd
+# mysqli pdo pdo_mysql gmp libgmp-devは移行用
+
+# Add php.ini
+COPY php.ini /usr/local/etc/php/
+
+# install redis
+RUN pecl install redis && docker-php-ext-enable redis
+
+# install stable node and latest npm
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash
+RUN apt-get update \
+  && apt-get install -y nodejs
