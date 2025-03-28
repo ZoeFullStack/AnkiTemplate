@@ -19,7 +19,7 @@ FileDelete, %tempShow%
 FileDelete, %tempAnswer%
 return
 
-F3::  
+F3::  ; f3 代表again
 jsonShowAnswer := "{""action"":""guiShowAnswer"",""version"":6}"
 jsonAnswer := "{""action"":""guiAnswerCard"",""version"":6,""params"":{""ease"":1}}"
 
@@ -39,7 +39,7 @@ FileDelete, %tempAnswer%
 return
 
 
-F4::  
+F4::  ; f4 代表good
 jsonShowAnswer := "{""action"":""guiShowAnswer"",""version"":6}"
 jsonAnswer := "{""action"":""guiAnswerCard"",""version"":6,""params"":{""ease"":3}}"
 

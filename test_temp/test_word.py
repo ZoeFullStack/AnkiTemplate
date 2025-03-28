@@ -4,6 +4,10 @@ import json
 # AnkiConnect 地址
 ANKI_CONNECT_URL = "http://127.0.0.1:8765"
 
+# 可配置的变量
+FIELD_NAME = "正面"  # 需要修改的字段名
+DECK_NAME = "test-j"  # 需要修改的牌组名称
+
 
 # 通过 AnkiConnect 获取指定牌组中的所有卡片
 def get_cards_by_deck(deck_name):
@@ -39,8 +43,7 @@ def fix_updated_fields(fields):
 
 
 # 更新卡片的字段内容
-def update_card(note_id, updated_fields):
-
+def update_card(note_id, updated_content):
     payload = {
         "action": "updateNoteFields",
         "version": 6,
@@ -48,9 +51,8 @@ def update_card(note_id, updated_fields):
             "note": {
                 "id": note_id,
                 "fields": {
-                    "正面": updated_fields
+                    FIELD_NAME: updated_content  # 使用变量 FIELD_NAME
                 },
-                
             }
         },
     }
@@ -69,19 +71,17 @@ def modify_cards_in_deck(deck_name):
     for note_id in note_ids:
         fields = get_card_fields(note_id)
 
-        # 如果 "正面" 字段存在并且包含 [sound:xxx]，则进行修改
-        if "正面" in fields:
-            front_field = fields["正面"]
-            # 确保 front_field 是字典且包含 value 键
-            if isinstance(front_field, dict) and "value" in front_field:
-                front_content = front_field["value"]
+        # 如果指定字段存在并且包含 [sound:xxx]，则进行修改
+        if FIELD_NAME in fields:
+            field_content = fields[FIELD_NAME]
+            # 确保 field_content 是字典且包含 value 键
+            if isinstance(field_content, dict) and "value" in field_content:
+                field_value = field_content["value"]
                 # 如果包含 sound:xxx 的格式，则修改为去掉前括号和 "sound:" 的内容
-                if front_content.startswith("[sound:") and front_content.endswith("]"):
-                    new_content = front_content[7:-1]  # 去掉 "sound:" 和 "[ ]"
-                    # fields["正面"]["value"] = new_content  # 更新字段内容
+                if field_value.startswith("[sound:") and field_value.endswith("]"):
+                    new_content = field_value[7:-1]  # 去掉 "sound:" 和 "[ ]"
                     update_card(note_id, new_content)  # 更新卡片
 
 
 if __name__ == "__main__":
-    deck_name = "test-j"  # 需要修改的牌组名称
-    modify_cards_in_deck(deck_name)
+    modify_cards_in_deck(DECK_NAME)
