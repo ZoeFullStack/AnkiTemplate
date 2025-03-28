@@ -7,17 +7,22 @@ import os
 ANKI_CONNECT_URL = "http://127.0.0.1:8765"
 
 def get_current_card():
+    """获取当前正在学习的卡片信息"""
     payload = {
         "action": "guiCurrentCard",
         "version": 6
     }
-    response = requests.post(ANKI_CONNECT_URL, json=payload)
-    result = response.json()
+    try:
+        response = requests.post(ANKI_CONNECT_URL, json=payload)
+        response.raise_for_status()  # 检查 HTTP 请求是否成功
+        result = response.json()
 
-    if "result" in result and result["result"]:
-        back_content = result["result"]["fields"]["Back"]["value"]
-        return back_content
-    else:
+        if "result" in result and result["Back"]:
+            return result["result"]  # 返回完整的卡片信息
+        else:
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"Error connecting to AnkiConnect: {e}")
         return None
 
 def clear_console():
@@ -25,13 +30,17 @@ def clear_console():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 if __name__ == "__main__":
+    last_card_id = None  # 用于存储上一次的卡片 ID
     while True:
-        clear_console()  # 每次刷新前清空终端
-        back_content = get_current_card()
-        if back_content:
-            print("\n当前卡片的背面内容：")
-            print(back_content)
+        current_card = get_current_card()
+        if current_card:
+            current_card_id = current_card.get("cardId")  # 获取当前卡片的唯一 ID
+            if current_card_id != last_card_id:  # 如果卡片 ID 发生变化
+                last_card_id = current_card_id
+                clear_console()  # 清空终端
+                print("\n当前卡片的内容：")
+                print(json.dumps(current_card.get("fields", {}), ensure_ascii=False, indent=4))  # 打印卡片字段内容
         else:
             print("未找到当前卡片")
         
-        time.sleep(1)  # 每秒刷新一次
+        time.sleep(0.5)  # 每 0.5 秒检查一次
