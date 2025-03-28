@@ -1,0 +1,1 @@
+{'sentence': {'value': 'これらのデータは多重化システムに基づいて管理されています', 'order': 0}, '正面': {'value': 'hypertts-05029808b8a9970e8c8942d7a295005bb966115caca10911c0e84c77.mp3', 'order': 1}, '背面': {'value': '1111111111111', 'order': 2}, 'vocab': {'value': '', 'order': 3}}
