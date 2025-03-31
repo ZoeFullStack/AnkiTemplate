@@ -26,21 +26,28 @@
 </style>
 
 <script>
+    // 全局变量初始化
     window.audio = null;
     window.pauseInterval = null;
-    window.isLooping = true;
     window.isPausedManually = false;
+    window.playDuration = null;
+    window.pauseDuration = null;
+    window.audioSessionId = null; // 用于标识当前音频会话
 
-    // 初始化音频
     function initializeAudio() {
-        console.log("Initializing audio...");
+        console.log(`[${new Date().toLocaleTimeString()}] Initializing audio...`);
 
-        // 確保旧オーディオインスタンスを削除
-        let oldAudio = document.getElementById("myAudio");
-        if (oldAudio) {
-            oldAudio.pause();
-            oldAudio.currentTime = 0;
-            oldAudio.remove();
+        // 清除旧的计时器
+        if (window.pauseInterval) {
+            clearTimeout(window.pauseInterval);
+            window.pauseInterval = null; // 重置计时器
+        }
+
+        // 确保旧的音频实例被清除
+        if (window.audio) {
+            window.audio.pause();
+            window.audio.remove();
+            window.audio = null; // 重置音频实例
         }
 
         let audioContainer = document.getElementById("audio-container");
@@ -48,25 +55,31 @@
         let newAudio = document.createElement("audio");
         newAudio.id = "myAudio";
         newAudio.controls = true;
-        newAudio.autoplay = true; // 次のカードに移動した際に自動再生
+        newAudio.autoplay = true; // 切换卡片时自动播放
         newAudio.loop = false;
 
         let source = document.createElement("source");
-        source.src = "{{正面}}"; // ここを実際の音声ファイルのURLに置き換える
+        source.src = "{{正面}}"; // 替换为实际音频文件的 URL
         source.type = "audio/mpeg";
 
         newAudio.appendChild(source);
         audioContainer.appendChild(newAudio);
 
-        // グローバル変数を更新
+        // 更新全局音频实例
         window.audio = newAudio;
 
-        // イベントリスナーを追加
+        // 更新音频会话 ID
+        window.audioSessionId = Date.now(); // 使用时间戳作为唯一标识符
+
+        // 重置全局变量
+        window.isPausedManually = false;
+
+        // 添加事件监听器
         addListeners();
     }
 
     function addListeners() {
-        if (!audio) {
+        if (!window.audio) {
             console.error("音频未初始化！");
             return;
         }
@@ -80,85 +93,119 @@
     }
 
     function pauseEveryCustom() {
-        if (!audio) return;
+        if (!window.audio) return;
 
-        // 再生時間と停止時間を取得
-        let playDuration = parseFloat(document.getElementById("playTime").value) * 1000;
-        let pauseDuration = parseFloat(document.getElementById("pauseTime").value) * 1000;
+        // 获取播放时间和暂停时间
+        window.playDuration = parseFloat(document.getElementById("playTime").value) * 1000;
+        window.pauseDuration = parseFloat(document.getElementById("pauseTime").value) * 1000;
 
-        // 前回のタイマーをクリア
+        // 清除旧的计时器
         if (window.pauseInterval) {
             clearTimeout(window.pauseInterval);
-            window.pauseInterval = null; // タイマーをリセット
+            window.pauseInterval = null; // 重置计时器
         }
 
-        // 手動停止フラグをリセット
+        // 重置手动暂停标志
         window.isPausedManually = false;
 
-        // 音声の状態をリセット
-        audio.pause();
-        audio.currentTime = 0; // 再生位置をリセット
+        // 保存当前会话 ID
+        const currentSessionId = window.audioSessionId;
 
-        // 再生と停止を繰り返すループ関数
+        // 播放和暂停的循环函数
         function playAndPauseLoop() {
-            // 手動停止されている場合はループを終了
-            if (window.isPausedManually) {
-                console.log("Playback manually stopped.");
+            // 如果会话 ID 不匹配，则退出
+            if (currentSessionId !== window.audioSessionId) {
+                console.log(`[${new Date().toLocaleTimeString()}] Session ID mismatch. Exiting loop.`);
                 return;
             }
 
-            // 再生を開始
-            audio.play();
-            console.log("Playing audio for " + playDuration + "ms");
+            // 如果手动停止，则退出循环
+            if (window.isPausedManually) {
+                console.log(`[${new Date().toLocaleTimeString()}] Playback manually stopped.`);
+                return;
+            }
 
-            // 再生時間が経過したら停止
+            // 检查音频实例是否有效
+            if (!window.audio) {
+                console.error(`[${new Date().toLocaleTimeString()}] Audio instance is null. Exiting loop.`);
+                return;
+            }
+
+            // 开始播放
+            window.audio.play().catch((error) => {
+                console.error(`[${new Date().toLocaleTimeString()}] Error playing audio:`, error);
+            });
+            console.log(`[${new Date().toLocaleTimeString()}] Playing audio for ${window.playDuration}ms`);
+
+            // 播放时间结束后暂停
             window.pauseInterval = setTimeout(() => {
-                audio.pause(); // 再生を停止
-                console.log("Pausing audio for " + pauseDuration + "ms");
+                if (currentSessionId !== window.audioSessionId) {
+                    console.log(`[${new Date().toLocaleTimeString()}] Session ID mismatch during pause. Exiting.`);
+                    return;
+                }
 
-                // 停止時間が経過したら再度再生
+                if (!window.audio) {
+                    console.error(`[${new Date().toLocaleTimeString()}] Audio instance is null during pause. Exiting.`);
+                    return;
+                }
+                window.audio.pause(); // 暂停播放
+                console.log(`[${new Date().toLocaleTimeString()}] Pausing audio for ${window.pauseDuration}ms`);
+
+                // 暂停时间结束后继续播放
                 window.pauseInterval = setTimeout(() => {
-                    audio.currentTime = 0; // 再生位置をリセット
-                    playAndPauseLoop();
-                }, pauseDuration);
-            }, playDuration);
+                    if (currentSessionId !== window.audioSessionId) {
+                        console.log(`[${new Date().toLocaleTimeString()}] Session ID mismatch during resume. Exiting.`);
+                        return;
+                    }
+
+                    if (!window.audio) {
+                        console.error(`[${new Date().toLocaleTimeString()}] Audio instance is null during resume. Exiting.`);
+                        return;
+                    }
+                    if (window.audio.currentTime >= window.audio.duration) {
+                        // 如果音频播放结束，重置播放位置
+                        window.audio.currentTime = 0;
+                        console.log(`[${new Date().toLocaleTimeString()}] Audio ended. Restarting playback.`);
+                    }
+                    playAndPauseLoop(); // 继续播放循环
+                }, window.pauseDuration);
+            }, window.playDuration);
         }
 
-        // 再生ループを開始
+        // 开始播放循环
         playAndPauseLoop();
     }
 
     function stopAutoPause() {
-        // タイマーをクリア
+        // 清除计时器
         if (window.pauseInterval) {
             clearTimeout(window.pauseInterval);
-            window.pauseInterval = null; // タイマーをリセット
+            window.pauseInterval = null; // 重置计时器
         }
 
-        // 音声を停止し、再生位置をリセット
-        if (audio) {
-            audio.pause();
-            audio.currentTime = 0; // 再生位置をリセット
+        // 停止音频播放
+        if (window.audio) {
+            window.audio.pause();
         }
 
-        // 再生ループを完全に停止
+        // 设置手动停止标志
         window.isPausedManually = true;
 
-        console.log("Auto pause stopped.");
+        console.log(`[${new Date().toLocaleTimeString()}] Auto pause stopped.`);
     }
 
     function toggleReverse() {
-        if (!audio) return;
+        if (!window.audio) return;
         let reverseSeconds = parseFloat(document.getElementById("reverseTime").value);
-        audio.pause();
-        audio.currentTime = Math.max(audio.currentTime - reverseSeconds, 0);
-        audio.play();
+        window.audio.pause();
+        window.audio.currentTime = Math.max(window.audio.currentTime - reverseSeconds, 0);
+        window.audio.play();
     }
 
     function toggleLoop() {
-        if (!audio) return;
+        if (!window.audio) return;
         window.isLooping = !window.isLooping;
-        audio.loop = window.isLooping;
+        window.audio.loop = window.isLooping;
         document.getElementById("loopToggle").innerText = window.isLooping ? "循环播放（已开）" : "循环播放（已关）";
     }
 
