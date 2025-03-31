@@ -3,7 +3,7 @@
         <div id="audio-container"></div>
 
         <label>播放时间（秒）：</label>
-        <input type="number" id="playTime" value="3">
+        <input type="number" id="playTime" value="5">
 
         <label>暂停时间（秒）：</label>
         <input type="number" id="pauseTime" value="6">
@@ -29,12 +29,13 @@
     window.audio = null;
     window.pauseInterval = null;
     window.isLooping = true;
+    window.isPausedManually = false;
 
     // 初始化音频
     function initializeAudio() {
-        console.log("初始化音频...");
+        console.log("Initializing audio...");
 
-        // 确保删除旧的 audio 实例
+        // 確保旧オーディオインスタンスを削除
         let oldAudio = document.getElementById("myAudio");
         if (oldAudio) {
             oldAudio.pause();
@@ -47,20 +48,20 @@
         let newAudio = document.createElement("audio");
         newAudio.id = "myAudio";
         newAudio.controls = true;
-        newAudio.autoplay = false;
+        newAudio.autoplay = true; // 次のカードに移動した際に自動再生
         newAudio.loop = false;
 
         let source = document.createElement("source");
-        source.src = "{{正面}}"; // 这里要替换成实际的音频地址
+        source.src = "{{正面}}"; // ここを実際の音声ファイルのURLに置き換える
         source.type = "audio/mpeg";
 
         newAudio.appendChild(source);
         audioContainer.appendChild(newAudio);
 
-        // 更新全局 audio 变量
+        // グローバル変数を更新
         window.audio = newAudio;
-        
-        // 立即为音频添加事件监听器
+
+        // イベントリスナーを追加
         addListeners();
     }
 
@@ -86,7 +87,13 @@
         let pauseDuration = parseFloat(document.getElementById("pauseTime").value) * 1000;
 
         // 前回のタイマーをクリア
-        if (window.pauseInterval) clearTimeout(window.pauseInterval);
+        if (window.pauseInterval) {
+            clearTimeout(window.pauseInterval);
+            window.pauseInterval = null; // タイマーをリセット
+        }
+
+        // 手動停止フラグをリセット
+        window.isPausedManually = false;
 
         // 音声の状態をリセット
         audio.pause();
@@ -94,10 +101,26 @@
 
         // 再生と停止を繰り返すループ関数
         function playAndPauseLoop() {
-            audio.play(); // 再生開始
+            // 手動停止されている場合はループを終了
+            if (window.isPausedManually) {
+                console.log("Playback manually stopped.");
+                return;
+            }
+
+            // 再生を開始
+            audio.play();
+            console.log("Playing audio for " + playDuration + "ms");
+
+            // 再生時間が経過したら停止
             window.pauseInterval = setTimeout(() => {
                 audio.pause(); // 再生を停止
-                setTimeout(playAndPauseLoop, pauseDuration); // 停止後に再度再生
+                console.log("Pausing audio for " + pauseDuration + "ms");
+
+                // 停止時間が経過したら再度再生
+                window.pauseInterval = setTimeout(() => {
+                    audio.currentTime = 0; // 再生位置をリセット
+                    playAndPauseLoop();
+                }, pauseDuration);
             }, playDuration);
         }
 
@@ -118,8 +141,9 @@
             audio.currentTime = 0; // 再生位置をリセット
         }
 
-        // ループ状態をリセット
-        window.isLooping = false;
+        // 再生ループを完全に停止
+        window.isPausedManually = true;
+
         console.log("Auto pause stopped.");
     }
 
