@@ -5,8 +5,11 @@ import json
 ANKI_CONNECT_URL = "http://127.0.0.1:8765"
 
 # 可配置的变量
-FIELD_NAME = "正面"  # 需要修改的字段名
-DECK_NAME = "test-j"  # 需要修改的牌组名称
+# FIELD_NAME = "正面" 
+# DECK_NAME = "test-j" 
+
+FIELD_NAME = "VocabAudio"  
+DECK_NAME = "test-1" 
 
 
 # 通过 AnkiConnect 获取指定牌组中的所有卡片

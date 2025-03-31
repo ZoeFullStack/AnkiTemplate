@@ -80,31 +80,47 @@
 
     function pauseEveryCustom() {
         if (!audio) return;
+
+        // 再生時間と停止時間を取得
         let playDuration = parseFloat(document.getElementById("playTime").value) * 1000;
         let pauseDuration = parseFloat(document.getElementById("pauseTime").value) * 1000;
 
+        // 前回のタイマーをクリア
         if (window.pauseInterval) clearTimeout(window.pauseInterval);
 
+        // 音声の状態をリセット
         audio.pause();
-        audio.currentTime = 0;
+        audio.currentTime = 0; // 再生位置をリセット
 
+        // 再生と停止を繰り返すループ関数
         function playAndPauseLoop() {
-            audio.play();
+            audio.play(); // 再生開始
             window.pauseInterval = setTimeout(() => {
-                audio.pause();
-                setTimeout(playAndPauseLoop, pauseDuration);
+                audio.pause(); // 再生を停止
+                setTimeout(playAndPauseLoop, pauseDuration); // 停止後に再度再生
             }, playDuration);
         }
+
+        // 再生ループを開始
         playAndPauseLoop();
     }
 
     function stopAutoPause() {
-        if (window.pauseInterval) clearTimeout(window.pauseInterval);
+        // タイマーをクリア
+        if (window.pauseInterval) {
+            clearTimeout(window.pauseInterval);
+            window.pauseInterval = null; // タイマーをリセット
+        }
+
+        // 音声を停止し、再生位置をリセット
         if (audio) {
             audio.pause();
-            audio.currentTime = 0;
+            audio.currentTime = 0; // 再生位置をリセット
         }
+
+        // ループ状態をリセット
         window.isLooping = false;
+        console.log("Auto pause stopped.");
     }
 
     function toggleReverse() {
