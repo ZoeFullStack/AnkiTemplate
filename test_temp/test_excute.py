@@ -38,8 +38,18 @@ if __name__ == "__main__":
             if current_card_id != last_card_id:  # 如果卡片 ID 发生变化
                 last_card_id = current_card_id
                 clear_console()  # 清空终端
-                print(json.dumps(current_card.get("fields", {}).get("背面").get("value"), ensure_ascii=False, indent=4))  # 打印卡片字段内容
+                
+                # print(json.dumps(current_card.get("fields", {}).get("背面").get("value"), ensure_ascii=False, indent=4))  # 打印卡片字段内容
+
+                # 拼接字段内容并打印
+                output = (
+                    current_card.get("fields", {}).get("VocabKanji", {}).get("value", "") + '\n' +
+                    current_card.get("fields", {}).get("VocabDefCN", {}).get("value", "") + '\n' +
+                    current_card.get("fields", {}).get("SentFurigana1", {}).get("value", "") + '\n' +
+                    current_card.get("fields", {}).get("SentDef1", {}).get("value", "")
+                )
+                print(output)  # 直接打印字符串，保留换行效果
         else:
             print("can't find this test")
-        
+
         time.sleep(0.5)  # 每 0.5 秒检查一次
