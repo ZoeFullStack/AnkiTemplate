@@ -3,10 +3,10 @@
         <div id="audio-container"></div>
 
         <label>播放时间（秒）：</label>
-        <input type="number" id="playTime" value="5">
+        <input type="number" id="playTime" value="3">
 
         <label>暂停时间（秒）：</label>
-        <input type="number" id="pauseTime" value="6">
+        <input type="number" id="pauseTime" value="4">
 
         <label>倒退时间（秒）：</label>
         <input type="number" id="reverseTime" value="1">
