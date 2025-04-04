@@ -54,4 +54,4 @@ if __name__ == "__main__":
         else:
             print("can't find this test")
 
-        time.sleep(0.5)  # 每 0.5 秒检查一次
+        time.sleep(0.5) 

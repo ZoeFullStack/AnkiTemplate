@@ -212,3 +212,31 @@
     // 页面加载时立即初始化音频
     initializeAudio();
 </script>
+
+
+
+
+
+
+// backside
+<div id="back-card" class="card-content">
+    {{#背面}}
+        <div>{{背面}}</div>
+    {{/背面}}
+</div>
+
+<script>
+    // 停止音频播放并清除实例
+    if (window.audio) {
+        console.log(`[${new Date().toLocaleTimeString()}] Back side detected. Stopping audio.`);
+        window.audio.pause();
+        window.audio.remove();
+        window.audio = null;
+    }
+
+    // 清除计时器
+    if (window.pauseInterval) {
+        clearTimeout(window.pauseInterval);
+        window.pauseInterval = null;
+    }
+</script>
