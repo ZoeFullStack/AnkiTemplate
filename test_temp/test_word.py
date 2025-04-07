@@ -1,15 +1,16 @@
 import requests
 import json
 
+# 这个代码可以遍历anki卡片然后修改指定的字段，去掉前面的 [sound:] 和后面的 ]，还可以统计出超过7次的good卡片
 # AnkiConnect 地址
 ANKI_CONNECT_URL = "http://127.0.0.1:8765"
 
 # 可配置的变量
-# FIELD_NAME = "正面" 
-# DECK_NAME = "test-j" 
+FIELD_NAME = "正面" 
+DECK_NAME = "test-j" 
 
-FIELD_NAME = "VocabAudio"  
-DECK_NAME = "test-1" 
+# FIELD_NAME = "VocabAudio"  
+# DECK_NAME = "test-1" 
 
 
 # 通过 AnkiConnect 获取指定牌组中的所有卡片
@@ -26,7 +27,6 @@ def get_cards_by_deck(deck_name):
     else:
         print("Error:", result.get("error"))
         return []
-
 
 # 获取卡片的字段内容
 def get_card_fields(note_id):
@@ -86,5 +86,57 @@ def modify_cards_in_deck(deck_name):
                     update_card(note_id, new_content)  # 更新卡片
 
 
+
+# 获取卡片的复习记录
+def get_reviews_of_cards(card_ids):
+    payload = {
+        "action": "getReviewsOfCards",
+        "version": 6,
+        "params": {"cards": card_ids}
+    }
+    response = requests.post(ANKI_CONNECT_URL, json=payload)
+    result = response.json()
+    if result.get("error") is None:
+        # print("复习记录返回值:", json.dumps(result["result"], indent=4, ensure_ascii=False))  # 打印返回值
+        return result["result"]
+    else:
+        print("Error:", result.get("error"))
+        return {}
+
+# 获取卡片的详细信息，包括 noteId 和字段内容
+def get_card_info(card_id):
+    payload = {
+        "action": "cardsInfo",
+        "version": 6,
+        "params": {"cards": [card_id]}
+    }
+    response = requests.post(ANKI_CONNECT_URL, json=payload)
+    result = response.json()
+    if result.get("error") is None:
+        return result["result"][0]  # 返回卡片的详细信息
+    else:
+        print("Error:", result.get("error"))
+        return None
+
+# 筛选点击 Good 超过 7 次的卡片
+def filter_good_cards(deck_name, good_threshold=7):
+    note_ids = get_cards_by_deck(deck_name)
+    good_cards = []
+
+    # 获取所有卡片的复习记录
+    reviews = get_reviews_of_cards(note_ids)
+
+    # 遍历复习记录，统计点击 "Good" 的次数
+    for card_id, review_list in reviews.items():  # 遍历字典的键和值
+        good_clicks = sum(1 for entry in review_list if entry["ease"] == 3)
+        if good_clicks > good_threshold:
+            good_cards.append(card_id)  # 添加 cardId 到结果列表
+
+    return good_cards
+
 if __name__ == "__main__":
     modify_cards_in_deck(DECK_NAME)
+    good_cards = filter_good_cards(DECK_NAME, good_threshold=7)
+    print("点击 Good 超过 7 次的卡片 ID:")
+    for card_id in good_cards:
+        print(card_id)
