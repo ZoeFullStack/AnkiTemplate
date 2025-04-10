@@ -11,7 +11,7 @@ DECK_NAME = "test-j"
 # 获取指定牌组中的所有卡片
 def get_cards_by_deck(deck_name):
     payload = {
-        "action": "findNotes",
+        "action": "findCards",
         "version": 6,
         "params": {"query": f"deck:{deck_name}"}
     }
@@ -82,7 +82,7 @@ def suspend_cards(card_ids):
     response = requests.post(ANKI_CONNECT_URL, json=payload)
     result = response.json()
     if result.get("error") is None:
-        print(f"成功将以下卡片设置为暂停状态: {card_ids}")
+        print(f"成功将以下卡片设置为暂停状态，CardId: {card_ids}")
     else:
         print("Error:", result.get("error"))
 
