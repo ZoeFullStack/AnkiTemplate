@@ -56,7 +56,7 @@
         newAudio.id = "myAudio";
         newAudio.controls = true;
         newAudio.autoplay = true; // 切换卡片时自动播放
-        newAudio.loop = false;
+        newAudio.loop = true; // 默认开启循环播放
 
         let source = document.createElement("source");
         source.src = "{{正面}}"; // 替换为实际音频文件的 URL
@@ -174,7 +174,6 @@
                 console.log(`[${new Date().toLocaleTimeString()}] Pausing audio for ${window.pauseDuration}ms`);
 
                 // 暂停时间结束后继续播放
-                //如果循环播放是关闭的，不再继续播放
                 window.pauseInterval = setTimeout(() => {
                     if (currentSessionId !== window.audioSessionId) {
                         console.log(`[${new Date().toLocaleTimeString()}] Session ID mismatch during resume. Exiting.`);
@@ -186,16 +185,15 @@
                         return;
                     }
 
-                 
-
                     if (window.audio.currentTime >= window.audio.duration) {
                         // 如果音频播放结束，重置播放位置
                         window.audio.currentTime = 0;
-                           // 如果循环播放是关闭的，不再继续播放
-                    if (!window.audio.loop) {
-                        console.log(`[${new Date().toLocaleTimeString()}] Looping is disabled. Exiting playback.`);
-                        return;
-                    }
+
+                        // 如果循环播放是关闭的，不再继续播放
+                        if (!window.audio.loop) {
+                            console.log(`[${new Date().toLocaleTimeString()}] Looping is disabled. Exiting playback.`);
+                            return;
+                        }
                         console.log(`[${new Date().toLocaleTimeString()}] Audio ended. Restarting playback.`);
                     }
                     playAndPauseLoop(); // 继续播放循环
