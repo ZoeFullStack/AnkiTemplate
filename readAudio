@@ -76,6 +76,9 @@
 
         // 添加事件监听器
         addListeners();
+
+        // 初始化按钮状态
+        updateButtonStates();
     }
 
     function addListeners() {
@@ -90,6 +93,24 @@
 
         // 确保页面加载完成后启动自动暂停
         pauseEveryCustom();
+    }
+
+    function updateButtonStates() {
+        // 更新循环播放按钮状态
+        const loopButton = document.getElementById("loopToggle");
+        if (window.audio && window.audio.loop) {
+            loopButton.innerText = "循环播放（已开）";
+        } else {
+            loopButton.innerText = "循环播放（已关）";
+        }
+
+        // 更新自动暂停按钮状态
+        const pauseButton = document.getElementById("startPause");
+        if (window.pauseInterval) {
+            pauseButton.innerText = "自动暂停（已开）";
+        } else {
+            pauseButton.innerText = "自动暂停（已关）";
+        }
     }
 
     function pauseEveryCustom() {
@@ -174,6 +195,9 @@
 
         // 开始播放循环
         playAndPauseLoop();
+
+        // 更新按钮状态
+        updateButtonStates();
     }
 
     function stopAutoPause() {
@@ -192,6 +216,9 @@
         window.isPausedManually = true;
 
         console.log(`[${new Date().toLocaleTimeString()}] Auto pause stopped.`);
+
+        // 更新按钮状态
+        updateButtonStates();
     }
 
     function toggleReverse() {
@@ -206,7 +233,9 @@
         if (!window.audio) return;
         window.isLooping = !window.isLooping;
         window.audio.loop = window.isLooping;
-        document.getElementById("loopToggle").innerText = window.isLooping ? "循环播放（已开）" : "循环播放（已关）";
+
+        // 更新按钮状态
+        updateButtonStates();
     }
 
     // 页面加载时立即初始化音频
