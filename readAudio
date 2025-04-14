@@ -15,6 +15,7 @@
         <button id="stopPause">停止</button>
         <button id="reversePlay">倒放</button>
         <button id="loopToggle">循环播放</button>
+        <button id="normalPlay">正常播放</button> <!-- 新增按钮 -->
     {{/正面}}
 </div>
 
@@ -90,6 +91,7 @@
         document.getElementById("stopPause").addEventListener("click", stopAutoPause);
         document.getElementById("reversePlay").addEventListener("click", toggleReverse);
         document.getElementById("loopToggle").addEventListener("click", toggleLoop);
+        document.getElementById("normalPlay").addEventListener("click", normalPlay); // 新增事件监听器
 
         // 确保页面加载完成后启动自动暂停
         pauseEveryCustom();
@@ -246,16 +248,29 @@
         updateButtonStates();
     }
 
+    function normalPlay() {
+        if (!window.audio) return;
+
+        // 停止自动暂停
+        stopAutoPause();
+
+        // 关闭循环播放
+        window.audio.loop = false;
+
+        // 将播放时间设置为 0
+        window.audio.currentTime = 0;
+
+        // 开始播放
+        window.audio.play();
+
+        console.log(`[${new Date().toLocaleTimeString()}] Normal playback started.`);
+        updateButtonStates();
+    }
+
     // 页面加载时立即初始化音频
     initializeAudio();
 </script>
 
-
-
-
-
-
-// backside
 <div id="back-card" class="card-content">
     {{#背面}}
         <div>{{背面}}</div>
