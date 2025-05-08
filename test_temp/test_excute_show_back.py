@@ -41,9 +41,12 @@ if __name__ == "__main__":
 
                 # 判断 "背面" 是否有值
                 back_value = current_card.get("fields", {}).get("背面", {}).get("value")
+                VocabKanji = current_card.get("fields", {}).get("VocabKanji", {}).get("value")
+                Example1 = current_card.get("fields", {}).get("Example1", {}).get("value")
+                meaning = current_card.get("fields", {}).get("meaning", {}).get("value")
                 if back_value:  # 如果 "背面" 有值
                     print(json.dumps(back_value, ensure_ascii=False, indent=4))  # 打印卡片字段内容
-                else:  # 如果 "背面" 没有值
+                elif VocabKanji: 
                     output = (
                         current_card.get("fields", {}).get("VocabKanji", {}).get("value", "") + '\n' +
                         current_card.get("fields", {}).get("VocabDefCN", {}).get("value", "") + '\n' +
@@ -51,7 +54,30 @@ if __name__ == "__main__":
                         current_card.get("fields", {}).get("SentDef1", {}).get("value", "")
                     )
                     print(output)  # 直接打印字符串，保留换行效果
+                elif meaning:
+                    output = (
+                        current_card.get("fields", {}).get("grammer", {}).get("value", "") + '\n' +
+                        current_card.get("fields", {}).get("connect", {}).get("value", "") + '\n' +
+                        current_card.get("fields", {}).get("sentence", {}).get("value", "") + '\n' +
+                        current_card.get("fields", {}).get("meaning", {}).get("value", "")
+                    )
+                    print(output) 
+                elif Example1:
+                    output = (
+                        current_card.get("fields", {}).get("Word", {}).get("value", "") + '\n' +
+                        current_card.get("fields", {}).get("Explain1", {}).get("value", "") + '\n' +
+                        current_card.get("fields", {}).get("Chinese1", {}).get("value", "") + '\n' +
+                        current_card.get("fields", {}).get("Example1", {}).get("value", "") + '\n' +
+                        current_card.get("fields", {}).get("Chinese1", {}).get("value", "") + '\n' +
+                        current_card.get("fields", {}).get("Example2", {}).get("value", "") + '\n' +
+                        current_card.get("fields", {}).get("Chinese2", {}).get("value", "") + '\n' +
+                        current_card.get("fields", {}).get("Example3", {}).get("value", "") + '\n' +
+                        current_card.get("fields", {}).get("Chinese3", {}).get("value", "") + '\n' +
+                        current_card.get("fields", {}).get("Example4", {}).get("value", "") + '\n' +
+                        current_card.get("fields", {}).get("Chinese4", {}).get("value", "") 
+                    )
+                    print(output)  # 直接打印字符串，保留换行效果
         else:
             print("can't find this test")
 
-        time.sleep(0.5) 
+        time.sleep(0.5)

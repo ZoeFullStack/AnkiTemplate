@@ -1,13 +1,12 @@
 import requests
 from datetime import datetime
 
-# 这个代码会统计指定牌组中的复习good超过七次，并且上一次也是good，并且和上一次good不是同一天的，确定不是在同一天的复习成功超过七次，已经转换为长期记忆的卡片，转换成suspend
 # AnkiConnect 地址
 ANKI_CONNECT_URL = "http://127.0.0.1:8765"
 
-# 可配置的变量
-DECK_NAME = "test-j" 
-# DECK_NAME = "test-1" 
+# 可配置的变量（多个牌组名称）
+DECK_NAMES = ["test-j", "test-1", "N1"]
+
 # 获取指定牌组中的所有卡片
 def get_cards_by_deck(deck_name):
     payload = {
@@ -126,13 +125,16 @@ def filter_good_cards(deck_name, good_threshold=7):
     return good_notes, non_suspended_cards
 
 if __name__ == "__main__":
-    # 筛选点击 Good 超过 7 次的卡片
-    print("正在筛选点击 Good 超过 7 次的卡片...")
-    good_notes, good_card_ids = filter_good_cards(DECK_NAME, good_threshold=7)
-    print("点击 Good 超过 7 次的 Note ID（非暂停状态）:")
-    for note_id in good_notes:
-        print(note_id)
+    for deck_name in DECK_NAMES:
+        print(f"正在处理牌组: {deck_name}")
+        
+        # 筛选点击 Good 超过 7 次的卡片
+        print("正在筛选点击 Good 超过 7 次的卡片...")
+        good_notes, good_card_ids = filter_good_cards(deck_name, good_threshold=7)
+        print("点击 Good 超过 7 次的 Note ID（非暂停状态）:")
+        for note_id in good_notes:
+            print(note_id)
 
-    # 将符合条件的卡片设置为暂停状态
-    print("正在将符合条件的卡片设置为暂停状态...")
-    suspend_cards(good_card_ids)
+        # 将符合条件的卡片设置为暂停状态
+        print("正在将符合条件的卡片设置为暂停状态...")
+        suspend_cards(good_card_ids)
