@@ -41,11 +41,17 @@ if __name__ == "__main__":
 
                 # 判断 "背面" 是否有值
                 back_value = current_card.get("fields", {}).get("背面", {}).get("value")
+                sentence = current_card.get("fields", {}).get("sentence", {}).get("value")
                 VocabKanji = current_card.get("fields", {}).get("VocabKanji", {}).get("value")
                 Example1 = current_card.get("fields", {}).get("Example1", {}).get("value")
                 meaning = current_card.get("fields", {}).get("meaning", {}).get("value")
                 if back_value:  # 如果 "背面" 有值
-                    print(json.dumps(back_value, ensure_ascii=False, indent=4))  # 打印卡片字段内容
+                    output = (
+                        sentence+ '\n'+ 
+                        back_value 
+                       
+                    )
+                    print(output)  # 打印卡片字段内容
                 elif VocabKanji: 
                     output = (
                         current_card.get("fields", {}).get("VocabKanji", {}).get("value", "") + '\n' +
@@ -76,7 +82,7 @@ if __name__ == "__main__":
                         current_card.get("fields", {}).get("Example4", {}).get("value", "") + '\n' +
                         current_card.get("fields", {}).get("Chinese4", {}).get("value", "") 
                     )
-                    print(output)  # 直接打印字符串，保留换行效果
+                    print(output)  
         else:
             print("can't find this test")
 

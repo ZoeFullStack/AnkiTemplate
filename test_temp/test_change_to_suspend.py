@@ -5,7 +5,7 @@ from datetime import datetime
 ANKI_CONNECT_URL = "http://127.0.0.1:8765"
 
 # 可配置的变量（多个牌组名称）
-DECK_NAMES = ["test-j", "test-1", "N1"]
+DECK_NAMES = ["test-j", "test-1", "test-note"]
 
 # 获取指定牌组中的所有卡片
 def get_cards_by_deck(deck_name):
