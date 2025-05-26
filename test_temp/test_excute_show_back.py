@@ -45,13 +45,13 @@ if __name__ == "__main__":
                 VocabKanji = current_card.get("fields", {}).get("VocabKanji", {}).get("value")
                 Example1 = current_card.get("fields", {}).get("Example1", {}).get("value")
                 meaning = current_card.get("fields", {}).get("meaning", {}).get("value")
+                output = ""
                 if back_value:  # 如果 "背面" 有值
-                    output = (
-                        sentence+ '\n'+ 
-                        back_value 
-                       
-                    )
-                    print(output)  # 打印卡片字段内容
+                    output += back_value
+
+                if sentence:  # 如果 "sentence" 有值
+                    output += sentence
+                
                 elif VocabKanji: 
                     output = (
                         current_card.get("fields", {}).get("VocabKanji", {}).get("value", "") + '\n' +
@@ -83,6 +83,7 @@ if __name__ == "__main__":
                         current_card.get("fields", {}).get("Chinese4", {}).get("value", "") 
                     )
                     print(output)  
+                print(json.dumps(output, ensure_ascii=False, indent=4))
         else:
             print("can't find this test")
 
