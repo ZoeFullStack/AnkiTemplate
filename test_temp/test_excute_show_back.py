@@ -48,10 +48,9 @@ if __name__ == "__main__":
                 output = ""
                 if back_value:  # 如果 "背面" 有值
                     output += back_value
-
+                    output +=  '\n'
                 if sentence:  # 如果 "sentence" 有值
                     output += sentence
-                
                 elif VocabKanji: 
                     output = (
                         current_card.get("fields", {}).get("VocabKanji", {}).get("value", "") + '\n' +
@@ -83,7 +82,7 @@ if __name__ == "__main__":
                         current_card.get("fields", {}).get("Chinese4", {}).get("value", "") 
                     )
                     print(output)  
-                print(json.dumps(output, ensure_ascii=False, indent=4))
+                print(output)
         else:
             print("can't find this test")
 
