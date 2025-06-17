@@ -51,6 +51,8 @@ if __name__ == "__main__":
                     output +=  '\n'
                 if sentence:  # 如果 "sentence" 有值
                     output += sentence
+                if meaning:  # 如果 "meaning" 有值
+                    output += meaning
                 elif VocabKanji: 
                     output = (
                         current_card.get("fields", {}).get("VocabKanji", {}).get("value", "") + '\n' +
