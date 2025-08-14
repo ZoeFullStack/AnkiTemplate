@@ -5,7 +5,7 @@ from datetime import datetime
 ANKI_CONNECT_URL = "http://127.0.0.1:8765"
 
 # 可配置的变量（多个牌组名称）
-DECK_NAMES = ["test-j", "test-1", "test-note"]
+DECK_NAMES = ["test-j", "test-1", "test-note", "N1-2"]
 
 # 获取指定牌组中的所有卡片
 def get_cards_by_deck(deck_name):
@@ -126,15 +126,15 @@ def filter_good_cards(deck_name, good_threshold=7):
 
 if __name__ == "__main__":
     for deck_name in DECK_NAMES:
-        print(f"正在处理牌组: {deck_name}")
+        print(f"process test: {deck_name}")
         
         # 筛选点击 Good 超过 7 次的卡片
-        print("正在筛选点击 Good 超过 7 次的卡片...")
+        print("filtering...")
         good_notes, good_card_ids = filter_good_cards(deck_name, good_threshold=7)
-        print("点击 Good 超过 7 次的 Note ID（非暂停状态）:")
+        print("over 7 times node id:")
         for note_id in good_notes:
             print(note_id)
 
         # 将符合条件的卡片设置为暂停状态
-        print("正在将符合条件的卡片设置为暂停状态...")
+        print("suspending cards...")
         suspend_cards(good_card_ids)
