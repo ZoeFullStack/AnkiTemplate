@@ -81,7 +81,7 @@ def suspend_cards(card_ids):
     response = requests.post(ANKI_CONNECT_URL, json=payload)
     result = response.json()
     if result.get("error") is None:
-        print(f"成功将以下卡片设置为暂停状态，CardId: {card_ids}")
+        print(f"test suspend success CardId: {card_ids}")
     else:
         print("Error:", result.get("error"))
 
