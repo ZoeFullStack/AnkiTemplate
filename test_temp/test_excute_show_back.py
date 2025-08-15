@@ -60,8 +60,7 @@ if __name__ == "__main__":
                         current_card.get("fields", {}).get("SentFurigana1", {}).get("value", "") + '\n' +
                         current_card.get("fields", {}).get("SentDef1", {}).get("value", "") + '\n' +
                         current_card.get("fields", {}).get("SentEN", {}).get("value", "") + '\n' +
-                        current_card.get("fields", {}).get("VocabDefEN", {}).get("value", "") + '\n' +
-                        
+                        current_card.get("fields", {}).get("VocabDefEN", {}).get("value", "")
                     )
                     print(output)  # 直接打印字符串，保留换行效果
                 elif meaning:
